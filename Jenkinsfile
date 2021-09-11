@@ -65,7 +65,7 @@ dockerImage.push()
             steps 
 			{
 				
-                sh "docker run -d -p 8003+"$BUILD_NUMBER":8080 suren67/samplewebapp"
+                sh docker run -d -p 8003+"$BUILD_NUMBER":8080 suren67/samplewebapp
  
             }
         }
