@@ -1,10 +1,16 @@
-pipeline {
+/*pipeline {
     agent any
 	
 	  tools
     {
        maven "MAVEN_HOME"
-    }
+    }*/
+pipeline {
+environment {
+registry = "suren67/samplewebapp"
+registryCredential = 'dockerhub_id'
+dockerImage = ''
+}
  stages {
       stage('checkout') {
            steps {
@@ -23,9 +29,11 @@ pipeline {
 
   stage('Docker Build and Tag') {
            steps {
-              
-                sh 'docker build -t samplewebapp:latest .' 
-                sh 'docker tag samplewebapp suren67/samplewebapp:latest'
+              script {
+		dockerImage = docker.build registry + ":$BUILD_NUMBER"
+		}
+                //sh 'docker build -t samplewebapp:latest .' 
+                //sh 'docker tag samplewebapp suren67/samplewebapp:latest'
                 //sh 'docker tag samplewebapp nikhilnidhi/samplewebapp:$BUILD_NUMBER'
                
           }
@@ -34,10 +42,14 @@ pipeline {
   stage('Publish image to Docker Hub') {
           
             steps {
-        withDockerRegistry([ credentialsId: "dockerhub_id", url: "" ]) {
+        /*withDockerRegistry([ credentialsId: "dockerhub_id", url: "" ]) {
           sh  'docker push suren67/samplewebapp:latest'
-        //  sh  'docker push nikhilnidhi/samplewebapp:$BUILD_NUMBER' 
-        }
+            }*/
+		    script {
+docker.withRegistry( '', registryCredential ) {
+dockerImage.push()
+}
+}
                   
           }
         }
