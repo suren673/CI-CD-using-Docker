@@ -6,6 +6,12 @@
        maven "MAVEN_HOME"
     }*/
 pipeline {
+	agent any
+	
+	  tools
+    {
+       maven "MAVEN_HOME"
+    }
 environment {
 registry = "suren67/samplewebapp"
 registryCredential = 'dockerhub_id'
