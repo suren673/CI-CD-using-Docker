@@ -16,9 +16,17 @@ environment {
 registry = "suren67/samplewebapp"
 registryCredential = 'dockerhub_id'
 dockerImage = ''
+	
+
+        PROJECT_ID = 'true-campus-320305'
+        CLUSTER_NAME = 'gkejenkincluster'
+        LOCATION = 'us-central1-c'
+        CREDENTIALS_ID = 'gke'
+   
+	
 }
  stages {
-      stage('checkout') {
+      stage('Checkout code') {
            steps {
              
                 git branch: 'master', url: 'https://github.com/suren673/CI-CD-using-Docker.git'
@@ -59,8 +67,17 @@ dockerImage.push()
                   
           }
         }
+	 
+stage('Deploy to GKE') {
+            steps{
+                sh "sed -i 's/samplewebapp:latest/samplewebapp:${env.BUILD_ID}/g' deployment.yaml"
+                step([$class: 'KubernetesEngineBuilder', projectId: env.PROJECT_ID, clusterName: env.CLUSTER_NAME, 
+		      location: env.LOCATION, manifestPattern: 'deployment.yaml', credentialsId: env.CREDENTIALS_ID, verifyDeployments: true])
+            }
+        }	 
+	 
      
-      stage('Run Docker container on Jenkins Agent') {
+    /*  stage('Run Docker container on Jenkins Agent') {
              
             steps 
 			{
@@ -69,7 +86,7 @@ dockerImage.push()
  
             }
         }
-/* stage('Run Docker container on remote hosts') {
+ stage('Run Docker container on remote hosts') {
              
             steps {
                 sh "docker -H ssh://jenkins@172.31.28.25 run -d -p 8003:8080 nikhilnidhi/samplewebapp"
