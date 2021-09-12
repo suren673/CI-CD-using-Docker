@@ -78,7 +78,7 @@ stage('Deploy to GKE') {
     withCredentials([file(credentialsId: "${JENKINS_GCLOUD_CRED_ID}", variable: 'JENKINSGCLOUDCREDENTIAL')])
     {
     sh """
-        gcloud auth activate-service-account --key-file=${true-campus-320305}
+        gcloud auth activate-service-account --key-file=${JENKINSGCLOUDCREDENTIAL}
         gcloud config set compute/zone us-central1-c
         gcloud config set compute/region us-central1
         gcloud config set project true-campus-320305
