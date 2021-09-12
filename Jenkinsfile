@@ -21,7 +21,7 @@ dockerImage = ''
         PROJECT_ID = 'true-campus-320305'
         CLUSTER_NAME = 'gkejenkincluster'
         LOCATION = 'us-central1-c'
-        CREDENTIALS_ID = 'gke'
+        CREDENTIALS_ID = 'true-campus-320305'
    
 	
 }
