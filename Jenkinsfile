@@ -19,7 +19,7 @@ dockerImage = ''
 	
 
         PROJECT_ID = 'true-campus-320305'
-        CLUSTER_NAME = 'gkejenkincluster'
+        GCLOUD_K8S_CLUSTER_NAME = 'gkejenkincluster'
         LOCATION = 'us-central1-c'
         CREDENTIALS_ID = 'true-campus-320305'
    
@@ -69,14 +69,24 @@ dockerImage.push()
         }
 	 
 stage('Deploy to GKE') {
-            steps{
+            /*steps{
                 sh "sed -i 's/samplewebapp:latest/samplewebapp:${env.BUILD_ID}/g' deployment.yaml"
                 step([$class: 'KubernetesEngineBuilder', projectId: env.PROJECT_ID, clusterName: env.CLUSTER_NAME, 
 		      location: env.LOCATION, manifestPattern: 'deployment.yaml', credentialsId: env.CREDENTIALS_ID, verifyDeployments: true])
-            }
+            }*/
+	steps{
+    withCredentials([file(credentialsId: "${JENKINS_GCLOUD_CRED_ID}", variable: 'true-campus-320305')])
+    {
+    sh """
+        gcloud auth activate-service-account --key-file=${true-campus-320305}
+        gcloud config set compute/zone us-central1-c
+        gcloud config set compute/region us-central1
+        gcloud config set project ${PROJECT_ID}
+        gcloud container clusters get-credentials ${GCLOUD_K8S_CLUSTER_NAME}
+
         }	 
-	 
-     
+	 }
+     }
     /*  stage('Run Docker container on Jenkins Agent') {
              
             steps 
