@@ -18,10 +18,10 @@ registryCredential = 'dockerhub_id'
 dockerImage = ''
 	
 
-//PROJECT_ID = 'true-campus-320305'
- //GCLOUD_K8S_CLUSTER_NAME = 'gkejenkincluster'
-  LOCATION = 'us-central1-c'
-  //JENKINSGCLOUDCREDENTIAL = 'Jenkin_GCP_Cred_ID'
+    PROJECT_ID = 'true-campus-320305'
+    CLUSTER_NAME = 'gkejenkincluster'
+    LOCATION = 'us-central1-c'
+    CREDENTIALS_ID = 'Jenkin_GCP_Cred_ID'
    
 	
 }
@@ -44,7 +44,7 @@ dockerImage = ''
   stage('Docker Build and Tag') {
            steps {
               script {
-		dockerImage = docker.build registry + ":$BUILD_NUMBER"
+		        dockerImage = docker.build registry + ":$BUILD_ID"
 		}
                 //sh 'docker build -t samplewebapp:latest .' 
                 //sh 'docker tag samplewebapp suren67/samplewebapp:latest'
@@ -53,15 +53,16 @@ dockerImage = ''
           }
         }
      
-  stage('Publish image to Docker Hub') {
+  stage('Push Docker image to Docker Hub') {
           
             steps {
         /*withDockerRegistry([ credentialsId: "dockerhub_id", url: "" ]) {
           sh  'docker push suren67/samplewebapp:latest'
             }*/
 		    script {
-docker.withRegistry( '', registryCredential ) {
-dockerImage.push()
+            docker.withRegistry( '', registryCredential ) {
+                dockerImage.push()
+                myapp.push("${env.BUILD_ID}")
 }
 }
                   
@@ -69,23 +70,12 @@ dockerImage.push()
         }
 	 
 stage('Deploy to GKE') {
-            /*steps{
+            steps{
                 sh "sed -i 's/samplewebapp:latest/samplewebapp:${env.BUILD_ID}/g' deployment.yaml"
                 step([$class: 'KubernetesEngineBuilder', projectId: env.PROJECT_ID, clusterName: env.CLUSTER_NAME, 
 		      location: env.LOCATION, manifestPattern: 'deployment.yaml', credentialsId: env.CREDENTIALS_ID, verifyDeployments: true])
-            }*/
-	steps{
-    withCredentials([file(credentialsId: "${JENKINS_GCLOUD_CRED_ID}", variable: 'JENKINSGCLOUDCREDENTIAL')])
-    {
-    sh """
-        gcloud auth activate-service-account --key-file=${JENKINSGCLOUDCREDENTIAL}
-        gcloud config set compute/zone us-central1-c
-        gcloud config set compute/region us-central1
-        gcloud config set project true-campus-320305
-        gcloud container clusters get-credentials gkejenkincluster
-
-        }	 
-	 }
+            }
+	
      }
      
     /*  stage('Run Docker container on Jenkins Agent') {
