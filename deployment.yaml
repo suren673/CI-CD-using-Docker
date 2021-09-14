@@ -15,7 +15,7 @@ template:
   spec:
     containers:
     - name: samplewebapp
-      image: suren67/samplewebapp:latest
+      image: suren67/samplewebapp:tagversion
       imagePullPolicy: Always
       ports:
       - containerPort: 5000
