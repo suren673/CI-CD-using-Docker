@@ -62,7 +62,7 @@ dockerImage = ''
 		    script {
             docker.withRegistry( '', registryCredential ) {
                 dockerImage.push()
-                myapp.push("${env.BUILD_ID}")
+                dockerImage.push("${env.BUILD_ID}")
 }
 }
                   
